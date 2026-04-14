@@ -26,8 +26,9 @@ def signup():
 
         #create a cursor to execute the sql queries
         cursor = connection.cursor()
+        
+        # structure an sql to insert the details received  from the form
 
-        # structure an sql to insert the details received  from thee form
         #The %s is a placeholder -> A PLACEHOLDER IT STANDS IN PLACES OF ACTUAL VALUES
         sql = "INSERT INTO user(username, email, phone, password) VALUES(%s, %s, %s, %s)"
 
@@ -39,11 +40,63 @@ def signup():
 
         #commit the changes to the database 
         connection.commit()
-
-
-
-
         return jsonify ({"message":"User registered successfully."})
+
+
+
+
+
+# Below is the login/signup route
+@app.route("/api/signin", methods=["POST"])
+def signin():
+    if request.method == "POST":
+        # extract the two details entered in the form
+        email = request.form ["email"]
+        password = request.form ["password"] 
+
+        # print out the details entered
+        # print(email, password)
+
+        # create/ establish a connection to the database
+        connection = pymysql.connect(host="localhost", user="root", password="" , database= "sokogardenonline")
+
+        #create a cursor
+        cursor = connection.cursor(pymysql.cursors.DictCursor)
+
+        # structure the sql query that will check whether the email and password entered are correct
+        sql = "SELECT * FROM user WHERE email = %s AND password = %s"
+
+        #put the data received from the form into a tuple
+        data = (email, password)
+
+        # by use of the cursor execute the sql
+        cursor.execute(sql, data)
+
+        #check whether there are rows returned and the store on the variable
+        count=cursor.rowcount
+
+        # if there are records returned it means the password and the email are correct otherwise it means the are wrong
+        if count == 0:
+            return jsonify({"message": "login failed"})
+        else:
+            # there must be a user so we create a variable that will hold the details of the user fetched from the database
+            user= cursor.fetchone()
+            #return the details to the frontend as well as a message
+            return jsonify({"message": "user logged in successfully","user":user})
+        
+
+
+
+
+
+
+
+
+        
+
+
+
+
 
 
 
