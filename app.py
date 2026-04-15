@@ -133,15 +133,6 @@ def Addproducts():
 
 
 
-
-
-
-
-
-
-
-
-
         return jsonify ({"message": "Add product added accessed"})
         
 
